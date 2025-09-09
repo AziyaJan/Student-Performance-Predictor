@@ -1,14 +1,511 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prediction Result</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 25%, #fecfef 50%, #ffd1ff 75%, #c1f0ff 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+            animation: rainbow 10s ease-in-out infinite;
+        }
+
+        @keyframes rainbow {
+            0%, 100% { background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 25%, #fecfef 50%, #ffd1ff 75%, #c1f0ff 100%); }
+            33% { background: linear-gradient(45deg, #a8edea 0%, #fed6e3 25%, #ffeaa7 50%, #fab1a0 75%, #fd79a8 100%); }
+            66% { background: linear-gradient(45deg, #d299c2 0%, #fef9d7 25%, #dae2f8 50%, #b8a9c9 75%, #622569 100%); }
+        }
+
+        /* Celebration particles */
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: fall 3s linear infinite;
+        }
+
+        .confetti:nth-child(1) { left: 10%; background: #ff6b9d; animation-delay: 0s; }
+        .confetti:nth-child(2) { left: 20%; background: #4ecdc4; animation-delay: 0.5s; }
+        .confetti:nth-child(3) { left: 30%; background: #45b7d1; animation-delay: 1s; }
+        .confetti:nth-child(4) { left: 40%; background: #f9ca24; animation-delay: 1.5s; }
+        .confetti:nth-child(5) { left: 50%; background: #f0932b; animation-delay: 2s; }
+        .confetti:nth-child(6) { left: 60%; background: #eb4d4b; animation-delay: 0.3s; }
+        .confetti:nth-child(7) { left: 70%; background: #6c5ce7; animation-delay: 0.8s; }
+        .confetti:nth-child(8) { left: 80%; background: #a29bfe; animation-delay: 1.3s; }
+        .confetti:nth-child(9) { left: 90%; background: #fd79a8; animation-delay: 1.8s; }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Floating elements */
+        .floating-element {
+            position: fixed;
+            animation: celebrate 4s ease-in-out infinite;
+            font-size: 2rem;
+            z-index: 1;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 15%;
+            animation-delay: 1s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(4) {
+            bottom: 30%;
+            right: 10%;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { 
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+            25% {
+                transform: translateY(-20px) rotate(15deg) scale(1.2);
+            }
+            50% {
+                transform: translateY(-10px) rotate(-10deg) scale(1.1);
+            }
+            75% {
+                transform: translateY(-25px) rotate(20deg) scale(1.3);
+            }
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 3rem 2.5rem;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.15),
+                0 0 0 10px rgba(255, 107, 157, 0.3),
+                0 0 0 20px rgba(255, 107, 157, 0.2);
+            position: relative;
+            z-index: 2;
+            border: 4px solid #ff6b9d;
+            animation: resultReveal 1s ease-out;
+        }
+
+        @keyframes resultReveal {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) rotateY(180deg);
+            }
+            50% {
+                transform: scale(1.05) rotateY(90deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateY(0deg);
+            }
+        }
+
+        .title-wrapper {
+            text-align: center;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1, #f9ca24, #f0932b);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbow-text 3s ease-in-out infinite;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes rainbow-text {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .celebration-text {
+            font-size: 1.3rem;
+            color: #6c5ce7;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .sparkle {
+            position: absolute;
+            color: #ffd700;
+            animation: sparkle 2s ease-in-out infinite;
+            font-size: 1.5rem;
+        }
+
+        .sparkle:nth-child(1) { top: -15px; right: 30px; animation-delay: 0s; }
+        .sparkle:nth-child(2) { top: 20px; left: 20px; animation-delay: 0.7s; }
+        .sparkle:nth-child(3) { bottom: -10px; right: 60px; animation-delay: 1.4s; }
+        .sparkle:nth-child(4) { top: -10px; left: 50%; animation-delay: 0.3s; }
+
+        @keyframes sparkle {
+            0%, 100% { 
+                transform: scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% { 
+                transform: scale(1.2) rotate(180deg);
+                opacity: 1;
+            }
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.1), rgba(78, 205, 196, 0.1));
+            border-radius: 25px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 3px solid #4ecdc4;
+            position: relative;
+            animation: cardGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes cardGlow {
+            0% { 
+                box-shadow: 0 10px 30px rgba(78, 205, 196, 0.3);
+            }
+            100% { 
+                box-shadow: 0 15px 40px rgba(78, 205, 196, 0.5);
+            }
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            border-left: 5px solid;
+            animation: slideInRight 0.8s ease-out;
+        }
+
+        .result-item:nth-child(1) {
+            border-left-color: #ff6b9d;
+            animation-delay: 0.2s;
+        }
+
+        .result-item:nth-child(2) {
+            border-left-color: #4ecdc4;
+            animation-delay: 0.4s;
+        }
+
+        .result-item:nth-child(3) {
+            border-left-color: #f9ca24;
+            animation-delay: 0.6s;
+        }
+
+        @keyframes slideInRight {
+            0% {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .result-item:hover {
+            transform: translateX(10px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .result-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+            animation: wiggle 2s ease-in-out infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+        }
+
+        .result-content {
+            flex: 1;
+        }
+
+        .result-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #5a4fcf;
+            margin-bottom: 0.3rem;
+        }
+
+        .result-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2d3436;
+        }
+
+        .score-display {
+            background: linear-gradient(45deg, #ff6b9d, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2rem !important;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .motivation-box {
+            background: linear-gradient(135deg, rgba(249, 202, 36, 0.2), rgba(240, 147, 43, 0.2));
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border: 3px solid #f9ca24;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .motivation-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .motivation-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f39c12;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .motivation-text {
+            font-size: 1.1rem;
+            color: #5a4fcf;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 1.3rem 2rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1, #f9ca24);
+            background-size: 300% 300%;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(255, 107, 157, 0.4);
+            animation: button-rainbow 4s ease-in-out infinite;
+            margin-top: 2rem;
+        }
+
+        @keyframes button-rainbow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .action-button::before {
+            content: '🔄';
+            position: absolute;
+            top: 50%;
+            left: -40px;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            transition: all 0.6s ease;
+        }
+
+        .action-button:hover::before {
+            left: calc(100% + 10px);
+        }
+
+        .action-button:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 18px 40px rgba(255, 107, 157, 0.6);
+        }
+
+        .action-button:active {
+            transform: translateY(-2px) scale(1.01);
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem;
+                padding: 2rem 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .result-icon {
+                font-size: 1.5rem;
+            }
+            
+            .score-display {
+                font-size: 1.5rem !important;
+            }
+            
+            .floating-element {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Student Performance Result</h1>
-    <p><strong>Predicted Score:</strong> {{ score }}</p>
-    <p><strong>Category:</strong> {{ category }}</p>
-    <p><strong>Comments:</strong> {{ comment }}</p>
-    <br>
-    <a href="/input"><button>Predict Another</button></a>
+    <!-- Celebration confetti -->
+    <div class="celebration">
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+    </div>
+
+    <!-- Floating celebration elements -->
+    <div class="floating-element">🎉</div>
+    <div class="floating-element">🏆</div>
+    <div class="floating-element">⭐</div>
+    <div class="floating-element">🎊</div>
+    
+    <div class="container">
+        <div class="title-wrapper">
+            <div class="sparkle">✨</div>
+            <div class="sparkle">⭐</div>
+            <div class="sparkle">💫</div>
+            <div class="sparkle">🌟</div>
+            <h1>Your Performance Result!</h1>
+            <div class="celebration-text">🎊 Drumroll please... Here's your prediction! 🎊</div>
+        </div>
+
+        <div class="result-card">
+            <div class="result-item">
+                <div class="result-icon">🎯</div>
+                <div class="result-content">
+                    <div class="result-label">Predicted Score</div>
+                    <div class="result-value score-display">{{ score }}</div>
+                </div>
+            </div>
+
+            <div class="result-item">
+                <div class="result-icon">🏅</div>
+                <div class="result-content">
+                    <div class="result-label">Performance Category</div>
+                    <div class="result-value">{{ category }}</div>
+                </div>
+            </div>
+
+            <div class="result-item">
+                <div class="result-icon">💬</div>
+                <div class="result-content">
+                    <div class="result-label">Personalized Comments</div>
+                    <div class="result-value">{{ comment }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="motivation-box">
+            <div class="motivation-title">
+                <span>🌟</span>
+                Keep Growing!
+                <span>🌟</span>
+            </div>
+            <div class="motivation-text">
+                Remember, every great achievement starts with the decision to try! Your journey to academic excellence is unique and amazing. Keep studying, stay curious, and believe in yourself! 🚀
+            </div>
+        </div>
+
+        <a href="/input">
+            <button class="action-button">Predict Another Student! 🎓</button>
+        </a>
+    </div>
 </body>
 </html>
