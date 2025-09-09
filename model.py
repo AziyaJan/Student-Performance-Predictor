@@ -4,8 +4,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 
 # Load dataset
-student_dataset = pd.read_csv('Student_Performance.csv')
-
+student_dataset = pd.read_csv('C:/Users/janaz/OneDrive/Desktop/Student Perfomance Project/Student_Performance.csv')
+#encoding the extracurricular activities column
+student_dataset.replace({'Extracurricular Activities':{'Yes':1,'No':0}},inplace=True)
 # Features & Target
 X = student_dataset[['Hours Studied', 'Previous Scores',
                      'Extracurricular Activities',
