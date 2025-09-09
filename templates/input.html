@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Input</title>
+</head>
+<body>
+    <h1>Enter Student Information</h1>
+    <form action="/predict" method="post">
+        <label>Hours Studied:</label>
+        <input type="number" name="hours" required><br><br>
+
+        <label>Previous Scores:</label>
+        <input type="number" name="prev_scores" required><br><br>
+
+        <label>Extracurricular Activities (Yes/No):</label>
+        <input type="text" name="extra" required><br><br>
+
+        <label>Sleep Hours:</label>
+        <input type="number" name="sleep" required><br><br>
+
+        <label>Sample Question Papers Practiced:</label>
+        <input type="number" name="papers" required><br><br>
+
+        <input type="submit" value="Predict Performance">
+    </form>
+</body>
+</html>
